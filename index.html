@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h2>Class Message Board</h2>
+    <input id="msgInput" type="text" placeholder="Type a message...">
+    <button onclick="postMessage()">Post</button>
+    <ul id="list"></ul>
+
+    <script>
+        const API_URL = "http://127.0.0.1:5000"; // Pointing to your Python server
+
+        // 1. Fetch messages from the Backend
+        async function loadMessages() {
+            const res = await fetch(`${API_URL}/get-messages`);
+            const data = await res.json();
+            document.getElementById('list').innerHTML = data.map(m => `<li>${m}</li>`).join('');
+        }
+
+        // 2. Send a new message to the Backend
+        async function postMessage() {
+            const text = document.getElementById('msgInput').value;
+            await fetch(`${API_URL}/send-message`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ text })
+            });
+            loadMessages(); // Refresh the list
+        }
+
+        loadMessages(); // Load messages when the page opens
+    </script>
+</body>
+</html>
